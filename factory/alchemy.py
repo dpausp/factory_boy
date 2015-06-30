@@ -41,7 +41,10 @@ class SQLAlchemyModelFactory(base.Factory):
     @classmethod
     def _create(cls, model_class, *args, **kwargs):
         """Create an instance of the model, and save it to the database."""
-        session = cls._meta.sqlalchemy_session
+        if callable(cls._meta.sqlalchemy_session):
+            session = cls._meta.sqlalchemy_session()
+        else:
+            session = cls._meta.sqlalchemy_session
         obj = model_class(*args, **kwargs)
         session.add(obj)
         if cls._meta.force_flush:
